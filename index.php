@@ -1,5 +1,10 @@
-<!doctype html>
+<?php
+// Start the session
+session_start();
+include 'query_functions.php';
+?>
 
+<!doctype html>
 <html land="en">
 <head>
     <title>FB lite</title>
@@ -47,18 +52,35 @@
 </header>
 
 <section id="login-form" class="container">
-    <div class="row">
-        <div class="col">
-        <form action="" method="post">
-            Username: <input type="text" name="username"><br>
-            Password: <input type="text" name="password"><br>
-            <input type="submit" value="Login">
-        </form>
+    <br>
+    <form action="" method="post">
+        <div class="form-row">
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Username" name="username" required><br>
+            </div>
         </div>
-    </div>
+        <div class="form-row">
+            <div class="col-md-4">
+                <input type="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
 </section>
 
 <footer>
+    <?php
+    // Set session variables
+    $_SESSION["user"] = "jaykch";
+    $_SESSION["userid"] = "1";
+    echo "Session variables are set.";
+
+    // Echo session variables that were set on previous page
+    echo "User is " . $_SESSION["user"] . ".<br>";
+    echo "Id is " . $_SESSION["userid"] . ".";
+
+    ?>
 
 </footer>
 </body>
