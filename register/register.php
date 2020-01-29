@@ -35,9 +35,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="./index.php">Register</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../index.php">Login</a>
-                    </li>
                 </ul>
             </div>
 
@@ -47,7 +44,7 @@
 <?php
 require '../utils/authentication.php';
 require '../utils/queries.php';
-$conn = login_system();
+
 
 $user = isset($_POST['username']) ? $_POST['username'] : '';
 $password = isset($_POST['password']) ? $_POST['password'] : '';
@@ -56,19 +53,23 @@ $email = isset($_POST['email']) ? $_POST['email'] : '';
 $dob = isset($_POST['dob']) ? $_POST['dob'] : '';
 $gender = isset($_POST['gender']) ? $_POST['gender'] : '';
 $location = isset($_POST['location']) ? $_POST['location'] : '';
-$relationshipstatus = isset($_POST['relationshipstatus']) ? $_POST['relationshipstatus'] : '';
-$visibilitystatus = isset($_POST['visibilitystatus']) ? $_POST['visibilitystatus'] : '';
-
-$numrows = check_user_exists($user, $conn);
+$relationshipStatus = isset($_POST['relationshipStatus']) ? $_POST['relationshipStatus'] : '';
+$visibilityStatus = isset($_POST['visibilityStatus']) ? $_POST['visibilityStatus'] : '';
 
 
-if ($numrows > 0) {
-    header("LOCATION: ./index.php?error=usernameTaken&email=" . $email);
+$conn = login_system();
+$numRowsUsername = check_user_exists($user, $conn);
+$numRowsEmail = check_email_exists($email, $conn);
+
+if ($numRowsUsername > 0) {
+    header("LOCATION: ./index.php?error=usernameTaken");
+} else if ($numRowsEmail > 0) {
+    header("LOCATION: ./index.php?error=emailTaken");
 } else {
 
     $query = 'INSERT INTO USERS ';
     $query .= '(USERNAME, PASSWORD, FULLNAME, EMAIL, DOB, GENDER, LOCATION, RELATIONSHIPSTATUS, VISIBILITYSTATUS)';
-    $query .= 'VALUES (\'' . $user . '\', \'' . $password . '\', \'' . $name . '\', \'' . $email . '\', TO_DATE(\'' . $dob . '\', \'YYYY-MM-DD\'), \'' . $gender . '\', \'' . $location . '\', \'' . $relationshipstatus . '\', \'' . $visibilitystatus . '\')';
+    $query .= 'VALUES (\'' . $user . '\', \'' . $password . '\', \'' . $name . '\', \'' . $email . '\', TO_DATE(\'' . $dob . '\', \'YYYY-MM-DD\'), \'' . $gender . '\', \'' . $location . '\', \'' . $relationshipStatus . '\', \'' . $visibilityStatus . '\')';
 
     $sql = oci_parse($conn, $query);
     $result = oci_execute($sql);
@@ -88,14 +89,30 @@ if ($numrows > 0) {
                     <li>Date of Birth:  $dob </li>
                     <li>Gender:  $gender </li>
                     <li>Location:  $location </li>
-                    <li>Relationship Status:  $relationshipstatus </li>
-                    <li>Visibility Status:  $visibilitystatus </li>
+                    <li>Relationship Status:  $relationshipStatus </li>
+                    <li>Visibility Status:  $visibilityStatus </li>
                 </ul>
                 </div>
                 </div>
             </div>";
+        sleep(5);
+        session_start();
+        $_SESSION["username"] = $user;
+        $_SESSION["fullName"] = $name;
+        $_SESSION["email"] = $email;
+        $_SESSION["dob"] = $dob;
+        $_SESSION["gender"] = $gender;
+        $_SESSION["location"] = $location;
+        $_SESSION["relationshipStatus"] = $relationshipStatus;
+        $_SESSION["visibilityStatus"] = $visibilityStatus;
+        $_SESSION["isAuthenticated"] = true;
+        oci_close($conn);
+        header("LOCATION: ../index.php");
+        exit();
     } else {
         echo $result;
+        oci_close($conn);
+        exit();
     }
 }
 ?>

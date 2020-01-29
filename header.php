@@ -42,7 +42,7 @@ session_start();
                     <?php
                     if (isset($_SESSION["isAuthenticated"])) {
                         echo "
-                     <li class=\"nav-item\">
+                     <li class=\"nav-item ml-auto\">
                      <form action='./login/logout.php'>
                          <button type=\"submit\" class=\"btn btn-primary\">Logout</button>
                      </form>

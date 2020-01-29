@@ -1,3 +1,8 @@
+<?php
+// Start the session
+session_start();
+?>
+
 <!doctype html>
 <html land="en">
 <head>
@@ -34,8 +39,10 @@
                     <li class="nav-item">
                         <a class="nav-link" href="../index.php">Home</a>
                     </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="./index.php">Register</a>
+                    <li class="nav-item ml-auto">
+                    <form action='../login/logout.php'>
+                        <button type="submit" class="btn btn-primary">Logout</button>
+                    </form>
                     </li>
                 </ul>
             </div>
@@ -45,15 +52,17 @@
 </header>
 
 
-<section id="register-form" class="container">
+<section id="update-form" class="container">
     <div class="row">
         <div class="col-md-12">
-            <form action="register.php" method="post">
+            <br>
+            <h1>Update your profile here!</h1>
+            <form action="./update.php" method="post">
                 <br>
                 <div class="form-row">
-                    <div class="col-md-6">
-                        <input type="text" class="form-control" placeholder="Username" name="username" required>
-<!--                        Check if username error-->
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="Username" name="username" required value=<?php echo $_SESSION['username']; ?>>
+                        <!--                        Check if username error-->
                         <?php
                         if (isset($_GET['error'])) {
                             if ($_GET['error'] == "usernameTaken") {
@@ -63,57 +72,25 @@
                         ?>
                         <br>
                     </div>
-                    <div class="col-md-6">
-                        <input type="password" name="password" class="form-control" placeholder="Password" required>
-                    </div>
                 </div>
-                <br>
-                <div class="form-row">
-                    <div class="col-md-6">
-                        <input type="text" name="name" class="form-control" placeholder="Full Name" required><br>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="email" name="email" class="form-control" placeholder="Email" required>
-                        <!--                        Check if username error-->
-                        <?php
-                        if (isset($_GET['error'])) {
-                            if ($_GET['error'] == "emailTaken") {
-                                echo "<small class=\"text-danger\">An account with this email already exists!!</small>";
-                            }
-                        }
-                        ?>
-                    </div>
-                </div>
-                <br>
-                <label for="dob">Date of Birth</label>
                 <div class="form-row">
                     <div class="col-md-4">
-                        <input type="date" name="dob" class="form-control" placeholder="Date of Birth" required><br>
+                        <input type="text" name="location" class="form-control" placeholder="Location" required value=<?php echo $_SESSION['location']; ?> >
                     </div>
                     <div class="col-md-4">
-                        <input type="text" name="gender" class="form-control" placeholder="Gender" required><br>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="text" name="location" class="form-control" placeholder="Location" required>
-                    </div>
-                </div>
-                <br>
-                <div class="form-row">
-                    <div class="col-md-6">
                         <input type="text" name="relationshipStatus" class="form-control"
-                               placeholder="Relationship Status"><br>
+                               placeholder="Relationship Status" value=<?php echo $_SESSION['relationshipStatus']; ?> ><br>
+
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <select class="form-control" name="visibilityStatus" required>
-                            <option disabled selected value> -- Visibility Status --</option>
-                            <option value="1">Public</option>
-                            <option value="2">Friends Only</option>
-                            <option value="3">Private</option>
+                            <option value="1" <?php if($_SESSION['visibilityStatus'] == 1) echo "selected"; ?>>Public</option>
+                            <option value="2" <?php if($_SESSION['visibilityStatus'] == 2) echo "selected"; ?>>Friends Only</option>
+                            <option value="3" <?php if($_SESSION['visibilityStatus'] == 3) echo "selected"; ?>>Private</option>
                         </select>
                     </div>
                 </div>
-                <br>
-                <button type="submit" class="btn btn-primary">Register</button>
+                <button type="submit" class="btn btn-primary">Update</button>
             </form>
             <br>
         </div>
