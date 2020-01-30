@@ -35,17 +35,9 @@ require "_testData.php";
                 <button type="submit" class="btn btn-danger">Delete Profile</button>
             </form>
         </div>
-        <div class="col-md-6">
-            <h2>Posts</h2>
-            <br>
-            <form action="./posts/create.php" method="post">
-                <textarea name="comment" rows="3" class="form-control d-block" required
-                          style="width: 100%">Enter text here...</textarea>
-                <br>
-                <button type="submit" class="btn btn-primary">Create post</button>
-            </form>
-            <br>
-        </div>
+        <?php
+        require './posts/index.php'
+        ?>
         <div class="col-md-3">
             <h2>Friend Requests</h2>
             <ul>

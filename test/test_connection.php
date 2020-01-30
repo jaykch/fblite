@@ -68,7 +68,99 @@ else
         echo "</tr>\n";
     }
     echo "</table>\n";
+
+    // testing SELECT SQL from movie table
+    $stid = oci_parse($conn, 'SELECT * FROM posts');
+    oci_execute($stid);
+
+    echo "<table border='1'>\n";
+
+    $ncols = oci_num_fields($stid);
+
+    echo "<tr>";
+
+    // Build HTML table Header using fieldnames from Oracle Table
+    for ($i = 1; $i <= $ncols; $i++) {
+        $column_name  = oci_field_name($stid, $i);
+        $column_type  = oci_field_type($stid, $i);
+
+        echo "<td><B>$column_name";
+        echo " ($column_type)</B></td>";
+    }
+    echo "</tr>\n";
+
+    // Populate the table with data fetched from the Oracle table
+    while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
+        echo "<tr>\n";
+        foreach ($row as $item) {
+            echo "    <td>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
+        }
+        echo "</tr>\n";
+    }
+    echo "</table>\n";
+
+    // testing SELECT SQL from movie table
+    $stid = oci_parse($conn, 'SELECT * FROM FRIENDSHIPS');
+    oci_execute($stid);
+
+    echo "<table border='1'>\n";
+
+    $ncols = oci_num_fields($stid);
+
+    echo "<tr>";
+
+    // Build HTML table Header using fieldnames from Oracle Table
+    for ($i = 1; $i <= $ncols; $i++) {
+        $column_name  = oci_field_name($stid, $i);
+        $column_type  = oci_field_type($stid, $i);
+
+        echo "<td><B>$column_name";
+        echo " ($column_type)</B></td>";
+    }
+    echo "</tr>\n";
+
+    // Populate the table with data fetched from the Oracle table
+    while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
+        echo "<tr>\n";
+        foreach ($row as $item) {
+            echo "    <td>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
+        }
+        echo "</tr>\n";
+    }
+    echo "</table>\n";
+
+    // testing SELECT SQL from movie table
+    $stid = oci_parse($conn, 'SELECT * FROM LIKES');
+    oci_execute($stid);
+
+    echo "<table border='1'>\n";
+
+    $ncols = oci_num_fields($stid);
+
+    echo "<tr>";
+
+    // Build HTML table Header using fieldnames from Oracle Table
+    for ($i = 1; $i <= $ncols; $i++) {
+        $column_name  = oci_field_name($stid, $i);
+        $column_type  = oci_field_type($stid, $i);
+
+        echo "<td><B>$column_name";
+        echo " ($column_type)</B></td>";
+    }
+    echo "</tr>\n";
+
+    // Populate the table with data fetched from the Oracle table
+    while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
+        echo "<tr>\n";
+        foreach ($row as $item) {
+            echo "    <td>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
+        }
+        echo "</tr>\n";
+    }
+    echo "</table>\n";
 }
+
+
 
 oci_close($conn);
 
