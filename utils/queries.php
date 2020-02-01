@@ -60,9 +60,27 @@ function fetch_user_id($conn, $username)
     return $row['ID'];
 }
 
+function fetch_username($conn, $userId)
+{
+    $query = 'SELECT USERNAME FROM users WHERE ID LIKE \'' . $userId . '\'';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    $row = oci_fetch_array($sql, OCI_ASSOC + OCI_RETURN_NULLS);
+    return $row['USERNAME'];
+}
+
 function fetch_posts($conn)
 {
-    $query = 'SELECT * FROM posts';
+    $query = 'SELECT * FROM posts WHERE parent_id IS NULL ORDER BY id DESC';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    oci_fetch_all($sql, $res, null, null, OCI_FETCHSTATEMENT_BY_ROW + OCI_NUM);
+    return $res;
+}
+
+function fetch_reply($conn, $parentId)
+{
+    $query = 'SELECT * FROM posts WHERE parent_id LIKE \'' . $parentId . '\'';
     $sql = oci_parse($conn, $query);
     oci_execute($sql);
     oci_fetch_all($sql, $res, null, null, OCI_FETCHSTATEMENT_BY_ROW + OCI_NUM);
@@ -80,7 +98,7 @@ function create_post($conn, $userId, $body)
     oci_close($conn);
 }
 
-function create_comment($conn, $parentId, $userId, $body)
+function create_reply($conn, $parentId, $userId, $body)
 {
     $query = 'INSERT INTO posts ';
     $query .= '(parent_id, user_id, body, timestamp) ';
@@ -91,6 +109,40 @@ function create_comment($conn, $parentId, $userId, $body)
     oci_close($conn);
 }
 
+function create_like($conn, $post_id)
+{
+    $query = 'INSERT INTO likes ';
+    $query .= '(post_id, user_id) ';
+    $query .= 'VALUES (\'' . $post_id . '\', \'' . $_SESSION["userId"] . '\')';
+
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    oci_close($conn);
+}
+
+function fetch_likes($conn, $postId)
+{
+    $query = 'SELECT * FROM likes WHERE post_id LIKE \'' . $postId . '\'';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    oci_fetch_all($sql, $res, null, null, OCI_FETCHSTATEMENT_BY_ROW + OCI_NUM);
+    return $res;
+}
+
+function has_user_liked($conn, $postId)
+{
+    $query = 'SELECT id FROM likes WHERE post_id LIKE \'' . $postId . '\' AND user_id LIKE \'' . $_SESSION["userId"] . '\'';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    $numRowsLikes = oci_fetch_all($sql, $res);
+
+    if ($numRowsLikes > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function search_users($conn, $data)
 {
     $query = 'SELECT ID, USERNAME FROM users WHERE USERNAME LIKE \'%' . $data . '%\' OR EMAIL LIKE \'%' . $data . '%\'';
@@ -99,6 +151,58 @@ function search_users($conn, $data)
     oci_fetch_all($sql, $res, null, null, OCI_FETCHSTATEMENT_BY_ROW + OCI_NUM);
 
     return $res;
+}
+
+function send_friend_request($conn, $userId2)
+{
+    $query = 'INSERT INTO friendships ';
+    $query .= '(user_id1, user_id2, friends, startdate) ';
+    $query .= 'VALUES (\'' . $_SESSION["userId"] . '\', \'' . $userId2 . '\', \'' . 'p' . '\' ,current_timestamp)';
+
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    oci_close($conn);
+}
+
+function fetch_friend_requests($conn)
+{
+    $query = 'SELECT * FROM friendships WHERE user_id2 LIKE \'' . $_SESSION["userId"] . '\' AND FRIENDS = \'' . 'p' . '\'';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    oci_fetch_all($sql, $res, null, null, OCI_FETCHSTATEMENT_BY_ROW + OCI_NUM);
+    return $res;
+}
+
+function accept_request($conn, $requestId)
+{
+    $query = 'UPDATE FRIENDSHIPS ';
+    $query .= 'SET FRIENDS = \'' . 'y' . '\' ';
+    $query .= 'WHERE ID = \'' . $requestId . '\'';
+
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+}
+
+function delete_request($conn, $requestId)
+{
+    $query = 'DELETE FROM FRIENDSHIPS WHERE ID LIKE \'' . $requestId . '\'';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    oci_close($conn);
+}
+
+function is_friends($conn, $userId1, $userId2)
+{
+    $query = 'SELECT id FROM FRIENDSHIPS WHERE user_id1 LIKE \'' . $userId1 . '\' AND user_id2 LIKE \'' . $userId2 . '\'';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    $numRowsLikes = oci_fetch_all($sql, $res);
+
+    if ($numRowsLikes > 0) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 ?>

@@ -1,8 +1,3 @@
-<?php
-require "_testData.php";
-
-?>
-
 <div class='container'>
     <br>
     <div class="row">
@@ -38,22 +33,10 @@ require "_testData.php";
         <?php
         require './posts/index.php'
         ?>
-        <div class="col-md-3">
-            <h2>Friend Requests</h2>
-            <ul>
-                <?php
-                foreach ($_SESSION["friendRequests"] as $user) {
-                    echo "<li>
-                            <span class=\"d-block\">$user</span>
-                            <button type=\"submit\" class=\"btn btn-dark\">Accept Request</button>
-                            <br>
-                          </li>";
-                }
-                ?>
-            </ul>
-            <br><br>
+        <div class='col-md-3'>
             <?php
-            require './search.php'
+            require './requests/friendRequests.php';
+            require './requests/search.php';
             ?>
         </div>
     </div>

@@ -12,6 +12,7 @@ $numRows = login_user($username, $password, $conn);
 $row = fetch_user_info($username, $conn);
 
 if ($numRows == 1) {
+    $_SESSION["userId"] = $row['ID'];
     $_SESSION["username"] = $row['USERNAME'];
     $_SESSION["fullName"] = $row['FULLNAME'];
     $_SESSION["email"] = $row['EMAIL'];

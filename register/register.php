@@ -97,6 +97,7 @@ if ($numRowsUsername > 0) {
             </div>";
         sleep(5);
         session_start();
+        $_SESSION["userId"] = fetch_user_id($conn, $user);
         $_SESSION["username"] = $user;
         $_SESSION["fullName"] = $name;
         $_SESSION["email"] = $email;
