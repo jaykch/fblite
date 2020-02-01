@@ -52,26 +52,9 @@ require "_testData.php";
                 ?>
             </ul>
             <br><br>
-            <h4>Search for people you may know</h4>
-            <br>
-            <form action="./posts/create.php" method="post" class="search-user">
-                <input type="search" name="searchUser" class="form-control d-block" required
-                       style="width: 100%" placeholder="username or email!"/>
-                <br>
-                <button type="submit" class="btn btn-primary">Search</button>
-            </form>
-            <br>
-            <ul>
-                <?php
-                foreach ($_SESSION["friendRequests"] as $user) {
-                    echo "<li>
-                            <span class=\"d-block\">$user</span>
-                            <button type=\"submit\" class=\"btn btn-secondary\">Send Request</button>
-                            <br>
-                          </li>";
-                }
-                ?>
-            </ul>
+            <?php
+            require './search.php'
+            ?>
         </div>
     </div>
 </div>

@@ -38,9 +38,10 @@ else
         echo "Current System Date in Oracle Database is $oracle_sys_date<br>\n";
     }
 
+    echo "<h2>Users</h2>";
 
     // testing SELECT SQL from movie table
-    $stid = oci_parse($conn, 'SELECT * FROM USERS');
+    $stid = oci_parse($conn, 'SELECT * FROM USERS ');
     oci_execute($stid);
 
     echo "<table border='1'>\n";
@@ -68,6 +69,8 @@ else
         echo "</tr>\n";
     }
     echo "</table>\n";
+
+    echo "<h2>Posts</h2>";
 
     // testing SELECT SQL from movie table
     $stid = oci_parse($conn, 'SELECT * FROM posts');
@@ -99,6 +102,8 @@ else
     }
     echo "</table>\n";
 
+    echo "<h2>Friendship table</h2>";
+
     // testing SELECT SQL from movie table
     $stid = oci_parse($conn, 'SELECT * FROM FRIENDSHIPS');
     oci_execute($stid);
@@ -128,6 +133,8 @@ else
         echo "</tr>\n";
     }
     echo "</table>\n";
+
+    echo "<h2>Likes Table</h2>";
 
     // testing SELECT SQL from movie table
     $stid = oci_parse($conn, 'SELECT * FROM LIKES');

@@ -91,4 +91,14 @@ function create_comment($conn, $parentId, $userId, $body)
     oci_close($conn);
 }
 
+function search_users($conn, $data)
+{
+    $query = 'SELECT ID, USERNAME FROM users WHERE USERNAME LIKE \'%' . $data . '%\' OR EMAIL LIKE \'%' . $data . '%\'';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    oci_fetch_all($sql, $res, null, null, OCI_FETCHSTATEMENT_BY_ROW + OCI_NUM);
+
+    return $res;
+}
+
 ?>
