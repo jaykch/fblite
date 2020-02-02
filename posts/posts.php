@@ -10,7 +10,8 @@ foreach ($posts as $post) {
     $comments = fetch_reply($conn, $post[0]);
     $postLikes = count(fetch_likes($conn, $post[0]));
     $hasUserLikedPost = has_user_liked($conn, $post[0]);
-    echo "
+    if (is_public($conn, $username) || $username == $_SESSION["username"] || (is_friends_post($conn, $username) && (is_friends_accepted($conn, $_SESSION["userId"], $post[2]) || is_friends_accepted($conn, $post[2], $_SESSION["userId"])))) {
+        echo "
                 <div class='post card'>
                     <div class='card-header'>
                         <h5 class='card-title'>$username :</h5>
@@ -25,12 +26,12 @@ foreach ($posts as $post) {
                         </form>
                         ";
 
-    foreach ($comments as $comment) {
-        $commenter = fetch_username($conn, $comment[2]);
-        $replies = fetch_reply($conn, $comment[0]);
-        $commentLikes = count(fetch_likes($conn, $comment[0]));
-        $hasUserLikedComment = has_user_liked($conn, $comment[0]);
-        echo "
+        foreach ($comments as $comment) {
+            $commenter = fetch_username($conn, $comment[2]);
+            $replies = fetch_reply($conn, $comment[0]);
+            $commentLikes = count(fetch_likes($conn, $comment[0]));
+            $hasUserLikedComment = has_user_liked($conn, $comment[0]);
+            echo "
                 <div class='comment card'>
                     <div class='card-header'>
                         <h5 class='card-title'>$commenter :</h5>
@@ -44,11 +45,11 @@ foreach ($posts as $post) {
                         <button type='submit' class='btn btn-primary reply'>Reply</button>
                         </form> 
                         ";
-        foreach ($replies as $reply) {
-            $replier = fetch_username($conn, $reply[2]);
-            $replyLikes = count(fetch_likes($conn, $reply[0]));
-            $hasUserLikedReply = has_user_liked($conn, $reply[0]);
-            echo "
+            foreach ($replies as $reply) {
+                $replier = fetch_username($conn, $reply[2]);
+                $replyLikes = count(fetch_likes($conn, $reply[0]));
+                $hasUserLikedReply = has_user_liked($conn, $reply[0]);
+                echo "
                 <div class='replies card'>
                     <div class='card-header'>
                         <h5 class='card-title'>$replier :</h5>
@@ -57,19 +58,38 @@ foreach ($posts as $post) {
                         <p class='card-text'>$reply[3]</p> 
                         ";
 
-            echo "  </div>
+                echo "  </div>
                     <div class='card-footer'>
                     <form action='./posts/createLike.php' method='post'>
                         <input type='text' hidden name='postId' value=$reply[0] />
                         ";
-            if ($hasUserLikedReply) {
+                if ($hasUserLikedReply) {
+                    echo "<button type='submit' class='like-button' style='filter: grayscale(100%);' disabled>&#128077;</button>";
+                } else {
+                    echo "<button type='submit' class='like-button'>&#128077;</button>";
+                };
+                echo "  </form>
+                    <span>&nbsp; ($replyLikes) &nbsp;</span>
+                    <p class='card-text ml-auto'>$reply[4]</p>
+                    </div>
+                </div>    
+                 <br>            
+          ";
+            }
+
+            echo "  </div>
+                    <div class='card-footer'>
+                    <form action='./posts/createLike.php' method='post'>
+                        <input type='text' hidden name='postId' value=$comment[0] />
+                        ";
+            if ($hasUserLikedComment) {
                 echo "<button type='submit' class='like-button' style='filter: grayscale(100%);' disabled>&#128077;</button>";
             } else {
                 echo "<button type='submit' class='like-button'>&#128077;</button>";
             };
-            echo "  </form>
-                    <span>&nbsp; ($replyLikes) &nbsp;</span>
-                    <p class='card-text ml-auto'>$reply[4]</p>
+            echo "      </form>
+                    <span>&nbsp; ($commentLikes) &nbsp;</span>
+                    <p class='card-text ml-auto'>$comment[4]</p>
                     </div>
                 </div>    
                  <br>            
@@ -79,37 +99,19 @@ foreach ($posts as $post) {
         echo "  </div>
                     <div class='card-footer'>
                     <form action='./posts/createLike.php' method='post'>
-                        <input type='text' hidden name='postId' value=$comment[0] />
-                        ";
-        if ($hasUserLikedComment) {
+                        <input type='text' hidden name='postId' value=$post[0] />
+          ";
+        if ($hasUserLikedPost) {
             echo "<button type='submit' class='like-button' style='filter: grayscale(100%);' disabled>&#128077;</button>";
         } else {
             echo "<button type='submit' class='like-button'>&#128077;</button>";
         };
-        echo "      </form>
-                    <span>&nbsp; ($commentLikes) &nbsp;</span>
-                    <p class='card-text ml-auto'>$comment[4]</p>
-                    </div>
-                </div>    
-                 <br>            
-          ";
-    }
-
-    echo "  </div>
-                    <div class='card-footer'>
-                    <form action='./posts/createLike.php' method='post'>
-                        <input type='text' hidden name='postId' value=$post[0] />
-          ";
-    if ($hasUserLikedPost) {
-        echo "<button type='submit' class='like-button' style='filter: grayscale(100%);' disabled>&#128077;</button>";
-    } else {
-        echo "<button type='submit' class='like-button'>&#128077;</button>";
-    };
-    echo "    </form>
+        echo "    </form>
                     <span>&nbsp; ($postLikes) &nbsp;</span>
                     <p class='card-text ml-auto'>$post[4]</p>
                     </div>
                 </div>    
                  <br>            
           ";
+    }
 }

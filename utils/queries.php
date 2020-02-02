@@ -205,4 +205,43 @@ function is_friends($conn, $userId1, $userId2)
     }
 }
 
+function is_friends_accepted($conn, $userId1, $userId2)
+{
+    $query = 'SELECT id FROM FRIENDSHIPS WHERE user_id1 LIKE \'' . $userId1 . '\' AND user_id2 LIKE \'' . $userId2 . '\' AND FRIENDS = \'' . 'y' . '\'';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    $numRowsLikes = oci_fetch_all($sql, $res);
+
+    if ($numRowsLikes > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function is_public($conn, $username)
+{
+    $query = 'SELECT VISIBILITYSTATUS FROM users WHERE USERNAME LIKE \'' . $username . '\'';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    $row = oci_fetch_array($sql, OCI_ASSOC + OCI_RETURN_NULLS);
+    if ($row['VISIBILITYSTATUS'] == 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function is_friends_post($conn, $username){
+    $query = 'SELECT VISIBILITYSTATUS FROM users WHERE USERNAME LIKE \'' . $username . '\'';
+    $sql = oci_parse($conn, $query);
+    oci_execute($sql);
+    $row = oci_fetch_array($sql, OCI_ASSOC + OCI_RETURN_NULLS);
+    if ($row['VISIBILITYSTATUS'] == 2) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 ?>
