@@ -1,10 +1,18 @@
+//------ LOGIN DETAILS -----//
+// FORMAT:: username : password
+// user1 : testing11
+// user2 : testing11
+// user3 : testing11
+// user4 : testing11
+
+
 //------ REGISTER USER -----//
 
 // Dob fields are pulled from the website form and stored as a date type variable using javascript Date() function
 let dob = new Date(1992, 11, 30);
 
 // All details are pulled from the website form
-username = "user";
+let username = "user";
 user = {
     "username": username,
     "name": username,
@@ -14,7 +22,7 @@ user = {
     "gender": "Female",
     "location": "Melbourne",
     "relationshipStatus": "Single",
-    "visibilityStatus": NumberInt(3),
+    "visibilityStatus": NumberInt(1),
     "friends": [],
     "friendRequests": [],
 };
@@ -28,7 +36,7 @@ try {
 }
 
 //------ LOGIN USER -----//
-let loggedInUser = db.Users.findOne({username: "user9", password: 'testing11'});
+let loggedInUser = db.Users.findOne({username: "user1", password: 'testing11'});
 // Code to check if logged in or unsuccessful
 loggedInUser != null ? print("Logged in successfully!") : print("Wrong username or password");
 
@@ -52,7 +60,7 @@ db.Users.deleteOne({_id: loggedInUser._id}, function (err, obj) {
 let post = {
     user: loggedInUser._id,
     timestamp: new Timestamp(),
-    body: loggedInUser.username + "'s first post",
+    body: loggedInUser.username + "'s fourth post",
     likes: [],
     comments: []
 };
@@ -220,7 +228,7 @@ db.Posts.update({_id: replyTestPostId}, {
     }
 });
 
-//------ SHOW ALL POSTS THAT ARE OF FRIENDS (WITH PRIVACY FRIENDS ONLY) AND PUBLIC -----//
+//------ SHOW ALL POSTS THAT ARE PUBLIC AND OF FRIENDS (WITH PRIVACY FRIENDS ONLY) -----//
 
 // NOTE: Visibility status 1: Public, 2: Friends Only, 3: Private
 
@@ -247,7 +255,7 @@ let searchTerm = "testing.com";
 db.Users.find({$or: [{"username": {$regex: ".*" + searchTerm + ".*"}}, {"email": {$regex: ".*" + searchTerm + ".*"}}]});
 
 //------ SEND FRIEND REQUEST -----//
-db.Users.update({username: 'user9'}, {
+db.Users.update({username: 'user3'}, {
     $push: {
         friendRequests: loggedInUser._id
     }
@@ -273,16 +281,24 @@ db.Users.aggregate([
 ]);
 
 //------ ACCEPT FRIEND REQUEST -----//
-let acceptRequestIndex = loggedInUser.friendRequests[0];
+let acceptRequestId = loggedInUser.friendRequests[0];
 
 db.Users.update({_id: loggedInUser._id}, {
     $push: {
-        friends: acceptRequestIndex
+        friends: acceptRequestId
     },
     $pull: {
-        friendRequests: acceptRequestIndex
+        friendRequests: acceptRequestId
     }
 });
+
+db.Users.update({_id: acceptRequestId}, {
+    $push: {
+        friends: loggedInUser._id
+    }
+});
+
+
 //------ REJECT FRIEND REQUEST -----//
 let rejectUser = loggedInUser.friendRequests[0];
 
