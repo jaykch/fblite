@@ -36,7 +36,7 @@ try {
 }
 
 //------ LOGIN USER -----//
-let loggedInUser = db.Users.findOne({username: "user1", password: 'testing11'});
+let loggedInUser = db.Users.findOne({username: "user3", password: 'testing11'});
 // Code to check if logged in or unsuccessful
 loggedInUser != null ? print("Logged in successfully!") : print("Wrong username or password");
 
@@ -60,7 +60,7 @@ db.Users.deleteOne({_id: loggedInUser._id}, function (err, obj) {
 let post = {
     user: loggedInUser._id,
     timestamp: new Timestamp(),
-    body: loggedInUser.username + "'s fourth post",
+    body: loggedInUser.username + "'s fifth post",
     likes: [],
     comments: []
 };
@@ -131,7 +131,7 @@ db.Users.aggregate([
 
 // First you look up a specific friends post (or of any user but in this case we are using a friend's post)
 // In an app this post would be showing on the dashboard and would have it's _id attached to it
-const r = db.Users.aggregate([
+const likingPost = db.Users.aggregate([
     {$match: {_id: loggedInUser.friends[0]}},
     {
         $lookup: {
@@ -144,13 +144,13 @@ const r = db.Users.aggregate([
 ]);
 
 // Then you save its ID
-const friendsPostId = r.toArray()[0]['posts'][0]._id;
+const friendsLikingPostId = likingPost.toArray()[0]['posts'][0]._id;
 
 // For testing purposes this is how you can view the particular post
 // let friendsPost = db.Posts.findOne({_id: friendsPostId});
 
 // Then you push a like as the current logged in user
-db.Posts.update({_id: friendsPostId}, {
+db.Posts.update({_id: friendsLikingPostId}, {
     $push: {
         likes: loggedInUser._id
     }
@@ -233,7 +233,12 @@ db.Posts.update({_id: replyTestPostId}, {
 // NOTE: Visibility status 1: Public, 2: Friends Only, 3: Private
 
 db.Users.aggregate([
-    {$match: {$or: [{visibilityStatus: NumberInt(1)}, {$and: [{visibilityStatus: NumberInt(2)}, {_id: {$in: loggedInUser.friends}}]}]}},
+    // For public and friends only user which are friends with the logged in user.
+    // {$match: {$or: [{visibilityStatus: NumberInt(1)}, {$and: [{visibilityStatus: NumberInt(2)}, {_id: {$in: loggedInUser.friends}}]}]}},
+    // For users which are friends and have friends only status
+    // {$match: {$and: [{visibilityStatus: NumberInt(2)}, {_id: {$in: loggedInUser.friends}}]}},
+    // For users that are public as in the demo
+    {$match: {visibilityStatus: NumberInt(1)}},
     {
         $lookup: {
             from: 'Posts',
@@ -245,10 +250,15 @@ db.Users.aggregate([
     {
         $group: {
             _id: "$_id",
-            posts: {$push: '$friendsPosts.body'},
+            posts: {
+                $addToSet: {
+                    body: '$friendsPosts.body',
+                    user: '$friendsPosts.user',
+                }
+            },
         }
     }
-]);
+]).pretty()
 
 //------ SEARCH USER -----//
 let searchTerm = "testing.com";
@@ -309,10 +319,16 @@ db.Users.update({_id: loggedInUser._id}, {
 });
 
 //------ UN-FRIEND -----//
-let friendIndex = 0;
+let friendIndexId = loggedInUser.friends[0];
 db.Users.update({_id: loggedInUser._id}, {
     $pull: {
-        friends: loggedInUser.friends[friendIndex]
+        friends: friendIndexId
+    }
+});
+
+db.Users.update({_id: friendIndexId}, {
+    $pull: {
+        friends: loggedInUser._id
     }
 });
 
